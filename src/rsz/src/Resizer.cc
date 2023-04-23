@@ -437,6 +437,67 @@ Resizer::findBuffers()
   }
 }
 
+void
+Resizer::findinverters()
+{
+  if (inverter_cells_.empty()){
+    LibertyLibraryIterator *lib_iter = network_->libertyLibraryIterator();
+    while (lib_iter->hasNext()) {
+      LibertyLibrary *lib = lib_iter->next();
+      for (LibertyCell *inverter : *lib->inverters()) {
+        if (!dontUse(inverter)
+            && isLinkCell(inverter)) {
+          inverter_cells_.push_back(inverter);
+        }
+      }
+    }
+    delete lib_iter;
+
+    if (inverter_cells_.empty())
+      logger_->error(RSZ, 101, "no inverter found.");
+    else {
+      sort(inverter_cells_, [this] (const LibertyCell *cell1,
+                                  const LibertyCell *cell2) {
+        return bufferDriveResistance(cell1)
+          > bufferDriveResistance(cell2);
+      });
+      inv_lowest_drive_ = inverter_cells_[0];
+      inv_largest_drive_ = inverter_cells_.back();
+    }
+  }
+}
+
+
+void
+Resizer::findBuffInverters()
+{
+  if (buff_inverter_cells_.empty()) {
+    LibertyLibraryIterator *lib_iter = network_->libertyLibraryIterator();
+    while (lib_iter->hasNext()) {
+      LibertyLibrary *lib = lib_iter->next();
+      for (LibertyCell *buff_inv : *lib->buff_invs()) {
+        if (!dontUse(buff_inv)
+            && isLinkCell(buff_inv)) {
+          buff_inverter_cells_.push_back(buff_inv);
+        }
+      }
+    }
+    delete lib_iter;
+
+    if (buff_inverter_cells_.empty())
+      logger_->error(RSZ, 100, "no buffer and inverter found.");
+    else {
+      sort(buff_inverter_cells_, [this] (const LibertyCell *cell1,
+                                  const LibertyCell *cell2) {
+        return bufferDriveResistance(cell1)
+          > bufferDriveResistance(cell2);
+      });
+      buff_inv_lowest_drive_ = buff_inverter_cells_[0];
+    }
+  }
+  
+}
+
 bool
 Resizer::isLinkCell(LibertyCell *cell)
 {
@@ -747,6 +808,8 @@ Resizer::resizePreamble()
   sta_->ensureClkNetwork();
   makeEquivCells();
   findBuffers();
+  findBuffInverters();
+  findinverters();
   findTargetLoads();
 }
 

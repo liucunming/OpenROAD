@@ -99,7 +99,11 @@ void RepairSlack::repairSlack(bool sizing0,
   float slack_margin = 0.0;
   int max_passes = 1000;
   init();
-  logger_->report("command created successful");
+  logger_->report("test for inv_buff lib");
+  for(LibertyCell* buff_inv : resizer_->buff_inverter_cells_){
+    logger_->report("{}",buff_inv->name());
+  }
+
 }
 
 }  // namespace rsz

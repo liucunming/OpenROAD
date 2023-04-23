@@ -360,6 +360,8 @@ protected:
   bool isTristateDriver(const Pin *pin);
   void makeEquivCells();
   void findBuffers();
+  void findBuffInverters();
+  void findinverters();
   bool isLinkCell(LibertyCell *cell);
   void findTargetLoads();
   float findTargetLoad(LibertyCell *cell);
@@ -590,8 +592,16 @@ protected:
   double design_area_;
   const MinMax *min_;
   const MinMax *max_;
+
   LibertyCellSeq buffer_cells_;
+  LibertyCellSeq buff_inverter_cells_;
+  LibertyCellSeq inverter_cells_;
+
   LibertyCell *buffer_lowest_drive_;
+  LibertyCell *buff_inv_lowest_drive_;
+  LibertyCell *inv_lowest_drive_;
+  LibertyCell *buffer_largest_drive_;
+  LibertyCell *inv_largest_drive_;
 
   CellTargetLoadMap *target_load_map_;
   VertexSeq level_drvr_vertices_;
@@ -616,6 +626,8 @@ protected:
   Map<Instance*, LibertyCell*> resized_inst_map_;
   InstanceSeq inserted_buffers_;
   InstanceSet inserted_buffer_set_;
+
+  InstanceSeq resyn_instance_seq_;
 
   // "factor debatable"
   static constexpr float tgt_slew_load_cap_factor = 10.0;
