@@ -492,6 +492,17 @@ repair_setup_pin_cmd(Pin *end_pin)
   resizer->repairSetup(end_pin);
 }
 
+void 
+repair_slack(bool sizing,
+             bool buffering,
+             bool splitload,
+             int inv_buff_mode)
+{
+  ensureLinked();
+  Resizer *resizer = getResizer();
+  resizer->repairSlack(sizing,buffering,splitload,inv_buff_mode);
+}
+
 void
 repair_hold(double setup_margin,
             double hold_margin,

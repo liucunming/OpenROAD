@@ -52,6 +52,8 @@ target_sources(rsz
     Rebuffer.cc
     SteinerTree.cc
     EstimateWireParasitics.cc
+    no_physical_buffering.cc
+    RepairSlack.cc
 )
 
 target_include_directories(rsz

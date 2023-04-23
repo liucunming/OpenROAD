@@ -384,6 +384,37 @@ proc repair_tie_fanout { args } {
   }
 }
 
+sta::define_cmd_args "repair_slack" { [-sizing]\
+  [-rebuffer]\
+  [-splitload]\
+  [-inv_buff_mode]}
+
+proc repair_slack { args } {
+  sta::parse_key_args "repair_slack" args \
+    keys {-inv_buff_mode } \
+    flags {-sizing -rebuffer -splitload}
+  puts 1
+  set sizing [info exists flags(-sizing)]
+  set rebuffer [info exists flags(-rebuffer)]
+  set splitload [info exists flags(-splitload)]
+  if { !$sizing && !$rebuffer && !$splitload } {
+    set sizing 1
+    set rebuffer 1
+    set splitload 1
+  }
+
+  if { [info exists keys(-inv_buff_mode)] } {
+    set inv_buff_mode $keys(-inv_buff_mode)
+    #[rsz::parse_time_margin_arg "-inv_buff_mode" keys]
+  } else {
+    set inv_buff_mode 1
+  }
+
+  sta::check_argc_eq0 "repair_slack" $args
+  rsz::check_parasitics 
+  rsz::repair_slack $sizing $rebuffer $splitload $inv_buff_mode
+}
+
 # -max_passes is for developer debugging so intentionally not documented
 # in define_cmd_args
 sta::define_cmd_args "repair_timing" {[-setup] [-hold]\

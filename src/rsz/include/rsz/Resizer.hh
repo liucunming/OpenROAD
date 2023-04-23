@@ -131,6 +131,7 @@ typedef std::shared_ptr<BufferedNet> BufferedNetPtr;
 class RepairDesign;
 class RepairSetup;
 class RepairHold;
+class RepairSlack;
 
 class NetHash
 {
@@ -228,6 +229,11 @@ public:
   float targetLoadCap(LibertyCell *cell);
 
   ////////////////////////////////////////////////////////////////
+
+  void repairSlack(bool sizing,
+             bool buffering,
+             bool splitload,
+             int inv_buff_mode );
 
   void repairSetup(double setup_margin,
                    // Percent of violating ends to repair to
@@ -547,6 +553,7 @@ protected:
   // Components
   RepairDesign *repair_design_;
   RepairSetup *repair_setup_;
+  RepairSlack *repair_slack_;
   RepairHold *repair_hold_;
   SteinerRenderer *steiner_renderer_;
 
@@ -619,6 +626,7 @@ protected:
   friend class RepairDesign;
   friend class RepairSetup;
   friend class RepairHold;
+  friend class RepairSlack;
 };
 
 } // namespace

@@ -43,6 +43,7 @@
 #include "RepairDesign.hh"
 #include "RepairHold.hh"
 #include "RepairSetup.hh"
+#include "RepairSlack.hh"
 #include "db_sta/dbNetwork.hh"
 #include "sta/ArcDelayCalc.hh"
 #include "sta/Bfs.hh"
@@ -144,6 +145,7 @@ Resizer::Resizer() :
   repair_design_(new RepairDesign(this)),
   repair_setup_(new RepairSetup(this)),
   repair_hold_(new RepairHold(this)),
+  repair_slack_(new RepairSlack(this)),
   steiner_renderer_(nullptr),
   wire_signal_res_(0.0),
   wire_signal_cap_(0.0),
@@ -187,6 +189,7 @@ Resizer::~Resizer()
   delete repair_design_;
   delete repair_setup_;
   delete repair_hold_;
+  delete repair_slack_;
 }
 
 void Resizer::init(Tcl_Interp* interp,
@@ -2313,6 +2316,18 @@ Resizer::rebufferNet(const Pin *drvr_pin)
 {
   resizePreamble();
   repair_setup_->rebufferNet(drvr_pin);
+}
+
+////////////////////////////////////////////////////////////////
+
+void 
+Resizer::repairSlack(bool sizing,
+             bool buffering,
+             bool splitload,
+             int inv_buff_mode)
+{
+  resizePreamble();
+  repair_slack_->repairSlack(sizing,buffering,splitload,inv_buff_mode);
 }
 
 ////////////////////////////////////////////////////////////////
